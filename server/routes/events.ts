@@ -1,17 +1,21 @@
 import express from 'express'
 
 import { validateDay } from './helpers.ts'
-
 import * as db from '../db/index.ts'
 
 const router = express.Router()
 export default router
 
+
 router.post('/', async (req, res, next) => {
   try {
-    const { name, description, time, locationId } = req.body
-    const day = validateDay(req.body.day)
-    const id = 0 // TODO: call your new db.addNewEvent function and use the returned ID
+    const { name, description, time, locationId, day } = req.body
+    const validatedDay = validateDay(day) 
+
+    
+    const newEvent = { name, description, time, locationId, day: validatedDay }
+    const id = await db.addNewEvent(newEvent) 
+
     const url = `/api/v1/events/${id}`
     res.setHeader('Location', url)
     res.status(201).json({ location: url })
@@ -20,31 +24,34 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', async (req, res) => {
   try {
     const id = Number(req.params.id)
-    // TODO: DELETE the event with this matching ID
+
+    
+    await db.deleteEvent(id)
+
+    
     res.sendStatus(204)
   } catch (e) {
-    next(e)
+    res.status(404).json({ error: 'Event not found or deletion failed' })
   }
 })
+
+
+
+
 
 router.get('/:id', async (req, res, next) => {
   try {
     const id = Number(req.params.id)
-    // TODO: Replace event below with the event from the database using its id
-    // NOTE: It should have the same shape as this one
-    const event = {
-      id: id,
-      locationId: 1,
-      day: 'friday',
-      time: '2pm - 3pm',
-      name: 'Slushie Apocalypse I',
-      description:
-        'This is totally a description of this really awesome event that will be taking place during this festival at the Yella Yurt. Be sure to not miss the free slushies cause they are rad!',
+
+    
+    const event = await db.getEventById(id)
+
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' })
     }
-    // TODO: if there's no event with that id, respond with a 404 instead
 
     res.json(event)
   } catch (e) {
@@ -52,16 +59,26 @@ router.get('/:id', async (req, res, next) => {
   }
 })
 
+
 router.patch('/:id', async (req, res, next) => {
   try {
-    const { name, description, time } = req.body
-    const id = Number(req.body.id)
-    const day = validateDay(req.body.day)
-    const locationId = Number(req.body.locationId)
+    const { name, description, time, day, locationId } = req.body
+    const id = Number(req.params.id)
 
-    // TODO: UPDATE the event in the db with the matching ID using these details,
-    // if no event has a matching id, respond with a 404 instead
-    res.sendStatus(204)
+    
+    const validatedDay = validateDay(day)
+
+    
+    const updatedEvent = { id, name, description, time, day: validatedDay, locationId }
+
+    
+    const result = await db.updateEvent(id, updatedEvent)
+
+    if (result) {
+      res.sendStatus(204)
+    } else {
+      res.status(404).json({ error: 'Event not found' })
+    }
   } catch (e) {
     next(e)
   }
