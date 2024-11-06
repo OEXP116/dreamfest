@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from 'react'
 import useEditLocation from '../hooks/use-edit-location.ts'
+import useDeleteLocation from '../hooks/use-delete-location.ts'  
 
 interface Props {
   id: number
@@ -14,6 +15,7 @@ export default function EditLocationForm({ id, name, description }: Props) {
   })
 
   const updateLocation = useEditLocation()
+  const deleteLocation = useDeleteLocation()  
 
   const handleChange = (
     evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -28,6 +30,12 @@ export default function EditLocationForm({ id, name, description }: Props) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     updateLocation.mutate({ id, ...formState })
+  }
+
+  const handleDelete = async () => {
+    if (window.confirm('Are you sure you want to delete this location?')) {
+      deleteLocation.mutate(id)  
+    }
   }
 
   return (
@@ -56,10 +64,18 @@ export default function EditLocationForm({ id, name, description }: Props) {
       <div></div>
       <button disabled={updateLocation.isPending}>Update location</button>{' '}
       <div></div>
+
+
+      <button type="button" onClick={handleDelete} disabled={deleteLocation.isPending}>
+        Delete location
+      </button>
+
       {updateLocation.isError && (
         <h3>{String(updateLocation.failureReason)}</h3>
       )}
       {updateLocation.isSuccess && <h3>Location updated!</h3>}
+      {deleteLocation.isError && <h3>{String(deleteLocation.failureReason)}</h3>}
+      {deleteLocation.isSuccess && <h3>Location deleted!</h3>}
     </form>
   )
 }

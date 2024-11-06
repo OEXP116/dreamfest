@@ -1,5 +1,6 @@
 import knexFile from './knexfile.js'
 import knex from 'knex'
+
 import type { Location, LocationData } from '../../models/Location.ts'
 import type { Event, EventWithLocation, EventData } from '../../models/Event.ts'
 
@@ -73,3 +74,24 @@ export const getEventById = async (id: number) => {
   return result 
 }
 
+
+export const addLocation = async (name: string, description: string) => {
+  try {
+    const [newLocation] = await connection('locations')
+      .insert({ name, description })
+      .returning('*');  
+    return newLocation; 
+  } catch (error) {
+    console.error('Error adding location:', error);
+    throw new Error('Failed to add location');
+  }
+};
+
+
+export const deleteLocation = async (id: number) => {
+  const result = await connection('locations')
+    .where('id', id)
+    .del();  
+
+  return result;  
+};

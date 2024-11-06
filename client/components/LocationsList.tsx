@@ -34,6 +34,7 @@ export default function LocationsList() {
           </li>
         ))}
       </ul>
+      <Link to="/locations/add" className="add-location-link">Add New Location</Link> 
     </>
   )
 }
