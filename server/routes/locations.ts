@@ -30,13 +30,19 @@ router.patch('/:id', async (req, res, next) => {
     const id = Number(req.params.id);
     const { name, description } = req.body;
 
-    await db.updateLocation(id, name, description);
+    if (!name || !description) {
+      return res.status(400).json({ message: 'Name and description are required' });
+    }
 
-    res.sendStatus(204); // No content response
+    await db.updateLocation({ id, name, description });
+
+    res.sendStatus(204);
   } catch (e) {
-    next(e);
+    console.error('Error in PATCH /locations/:id:', e); 
+    next(e); 
   }
 });
+
 
 // Add new location (POST)
 router.post('/', async (req, res, next) => {

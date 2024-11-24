@@ -16,19 +16,20 @@ export async function getAllLocations() {
 }
 
 export async function getEventsByDay(day: string) {
-  const events = await connection('events')
-    .join('locations', 'events.location_id', 'locations.id')
-    .where('events.day', day)
+  return await connection('events')
+    .join('locations', 'events.location_id', 'locations.id') 
     .select(
       'events.id',
-      'events.day',
-      'events.time',
-      'events.name as eventName',
+      'events.name as eventName', 
       'events.description',
-      'locations.name as locationName'
+      'events.time',
+      'events.day',
+      'events.location_id as locationId', 
+      'locations.name as locationName' 
     )
-  return events as EventWithLocation[]
+    .where('events.day', day);
 }
+
 
 export async function getLocationById(id: number) {
   const location = await connection('locations')
@@ -38,10 +39,19 @@ export async function getLocationById(id: number) {
   return location as Location
 }
 
-export async function updateLocation(id: number, name: string, description: string) {
-  await connection('locations')
+export async function updateLocation(updatedLocation: { id: number; name: string; description: string }) {
+  const { id, name, description } = updatedLocation;
+
+ 
+  if (!id || !name || !description) {
+    throw new Error('Missing required fields: id, name, or description');
+  }
+
+  const result = await connection('locations')
     .where('id', id)
-    .update({ name, description })
+    .update({ name, description });
+
+  return result; 
 }
 
 export async function addNewEvent(event: EventData) {

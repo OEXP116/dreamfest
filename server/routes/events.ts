@@ -83,3 +83,37 @@ router.patch('/:id', async (req, res, next) => {
     next(e)
   }
 })
+
+
+
+router.get('/schedule/:day', async (req, res, next) => {
+  try {
+    const { day } = req.params;
+
+    // Validate the day (e.g., friday, saturday, sunday)
+    const validatedDay = validateDay(day);
+
+    // Fetch events for the given day from the database
+    const events = await db.getEventsByDay(validatedDay);
+
+    // Transform data as needed to match the test snapshot
+    const formattedEvents = events.map((event) => ({
+      id: event.id,
+      eventName: event.name,
+      description: event.description,
+      time: event.time,
+      day: event.day,
+      locationId: event.location_id,
+      locationName: event.location_name, // Assuming the DB query joins and provides this
+      name: event.location_name,        // Match the test naming structure
+    }));
+
+    // Respond with the events for the given day
+    res.json({
+      day: validatedDay,
+      events: formattedEvents,
+    });
+  } catch (error) {
+    next(error);
+  }
+});

@@ -1,17 +1,28 @@
-import { describe, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { capitalise, validateDay } from '../routes/helpers.ts'
 
 // TODO: Write these tests (remove .todo)
 describe('capitalise', () => {
-  test.todo('returns a capitalised string')
+  test('returns a capitalised string', () => {
+    expect(capitalise('hello')).toBe('Hello');
+    expect(capitalise('world')).toBe('World');
+  });
 
   // TODO: Implement this functionality in helpers.js
-  test.todo('returns an empty string if the name argument is not a string')
+  test('returns an empty string if the name argument is not a string', () => {
+    expect(capitalise(123 as unknown as string)).toBe('');
+    expect(capitalise(null as unknown as string)).toBe('');
+    expect(capitalise(undefined as unknown as string)).toBe('');
+  });
 
-  // TODO: Implement this functionality in helpers.js
-  test.todo('returns an empty string if the name argument is an empty string')
-})
+    // TODO: Implement this functionality in helpers.js
+  test('returns an empty string if the name argument is an empty string', () => {
+    expect(capitalise('')).toBe('');
+  });
+});
+
+
 
 // TODO: Write these tests (remove .todo)
 describe('validateDay', () => {

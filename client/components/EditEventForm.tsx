@@ -53,17 +53,17 @@ export default function EditEventForm({
 
   return (
     <form onSubmit={handleSubmit} className="form">
-      <input type="hidden" name="id" value="{{event.id}}" />
+  <input type="hidden" name="id" value="{{event.id}}" />
 
-      <label className="label">Event name</label>
-      <input
-        type="text"
-        id="name"
-        name="name"
-        placeholder="Event name"
-        onChange={handleChange}
-        value={formState.name}
-      />
+  <label htmlFor="name" className="label">Event name</label>
+  <input
+    type="text"
+    id="name"
+    name="name"
+    placeholder="Event name"
+    onChange={handleChange}
+    value={formState.name}
+  />
 
       <label htmlFor="description" className="label">
         Description

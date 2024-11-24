@@ -8,6 +8,7 @@ export const eventDays = ['friday', 'saturday', 'sunday']
  * @returns string
  */
 export function capitalise(name: string) {
+  if (typeof name !== 'string' || name.length === 0) return '';
   return name[0].toUpperCase() + name.substring(1)
 }
 
@@ -22,10 +23,22 @@ export function capitalise(name: string) {
  */
 export function validateDay(
   day: string | undefined,
-  days: string[] = eventDays
-) {
-  // Use the first day as the default value if the day argument isn't valid
-  if (typeof day !== 'string') return days[0]
-  if (!days.includes(day)) return days[0]
-  return day
+  days?: string[],
+  eventDaysOverride: string[] = eventDays
+): string {
+  const validDays = days ?? eventDaysOverride
+
+  // Validate the 'days' array
+  if (!Array.isArray(validDays) || !validDays.every(d => typeof d === 'string')) {
+    throw new Error('days must be an array of strings')
+  }
+
+  if (typeof day !== 'string') return validDays[0]
+  const lowerCaseDay = day.toLowerCase()
+  return validDays.includes(lowerCaseDay) ? lowerCaseDay : validDays[0]
 }
+
+
+
+
+

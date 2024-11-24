@@ -30,8 +30,6 @@ describe('Getting an Event', () => {
             "id": 1,
             "locationId": 1,
             "locationName": "TangleStage",
-            "location_id": 1,
-            "name": "TangleStage",
             "time": "2pm - 3pm",
           },
           {
@@ -41,8 +39,6 @@ describe('Getting an Event', () => {
             "id": 2,
             "locationId": 2,
             "locationName": "Yella Yurt",
-            "location_id": 2,
-            "name": "Yella Yurt",
             "time": "6pm - 7pm",
           },
         ],
