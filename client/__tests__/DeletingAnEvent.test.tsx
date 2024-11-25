@@ -3,6 +3,7 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import nock from 'nock'
 
 import { setupApp } from './setup.tsx'
+import { waitFor } from '@testing-library/react'
 
 beforeAll(() => {
   nock.disableNetConnect()
@@ -56,10 +57,35 @@ describe('Deleting an event', () => {
     expect(locationScope.isDone()).toBe(true)
   })
 
-  it.todo('deletes the event when the delete button is clicked', async () => {
-    // TODO: write client integration test for event delete
-    // ARRANGE
-    // ACT
-    // ASSERT
-  })
+  it('deletes the event when the delete button is clicked', async () => {
+    const deleteEventScope = nock('http://localhost')
+      .delete('/api/v1/events/1')
+      .reply(204);
+  
+    const locationScope = nock('http://localhost')
+      .get('/api/v1/locations')
+      .reply(200, fakeLocations);
+  
+    const eventScope = nock('http://localhost')
+      .get('/api/v1/events/1')
+      .reply(200, fakeEvent);
+  
+    const { user, ...screen } = setupApp('/events/1/edit');
+  
+    await screen.findByText(/edit event/i);
+  
+    const deleteButton = await screen.findByRole('button', { name: 'Delete event' });
+    await user.click(deleteButton);
+  
+    await waitFor(() => {
+      expect(deleteEventScope.isDone()).toBe(true);
+    });
+  
+    expect(locationScope.isDone()).toBe(true);
+    expect(eventScope.isDone()).toBe(true);
+  
+    expect(screen.queryByText(/failed to load event data/i)).not.toBeInTheDocument();
+  });
+  
+  
 })
